@@ -1,39 +1,42 @@
-services:
+version: '3.8'
 
+services:
   frontend:
-    build: 
-      context : Frontend/.
-      dockerfile: dockerfile
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000" # Expose frontend on port 3000
+      - "3000:3000"
     depends_on:
-      - backend # Ensure the backend starts first
-    environment:
-      - CHOKIDAR_USEPOLLING=true # Optional: Prevents file change issues in some environments
+      - backend
+    command: ["docker-compose", "-f", "Frontend/docker-compose.yml", "up"]
 
   backend:
     build:
-      context : Backend/.
-      dockerfile: dockerfile
+      context: ./Backend
+      dockerfile: Dockerfile
     ports:
-      - "10000:10000" # Expose backend on port 10000
-    depends_on:
-      - rag # Ensure the rag starts first
+      - "10000:10000"
     env_file:
-      - ./Backend/.env  # env file path
-      
+      - ./Backend/.env
+    depends_on:
+      - rag
+    command: ["docker-compose", "-f", "Backend/docker-compose.yml", "up"]
+
   rag:
     build:
-      context : RAG/.
-      dockerfile: dockerfile
+      context: ./RAG
+      dockerfile: Dockerfile
     ports:
-      - "5000:5000" # Expose backend on port 5000
+      - "5000:5000"
     depends_on:
-      - llm # Ensure the rag starts first  
+      - llm
+    command: ["docker-compose", "-f", "RAG/docker-compose.yml", "up"]
 
   llm:
     build:
-      context : LLM/.
-      dockerfile: dockerfile
+      context: ./LLM
+      dockerfile: Dockerfile
     ports:
-      - "5002:5002" # Expose backend on port 5002      
+      - "5002:5002"
+    command: ["docker-compose", "-f", "LLM/docker-compose.yml", "up"]
